@@ -101,9 +101,9 @@ Archive old messages and reset a chat
 chat clear [--yes] [chat]
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--yes` | Skip confirmation | — |
+| Flag    | Description       | Default |
+| ------- | ----------------- | ------- |
+| `--yes` | Skip confirmation | —       |
 
 
 ### chat list
@@ -114,12 +114,12 @@ List available chats
 chat list [--json] [--all] [--unread] [--as <as>]
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--json` | Output as JSON array | — |
-| `--all` | Include empty channels (hidden by default) | — |
-| `--unread` | Only list channels with unread messages (requires identity) | — |
-| `--as` | Your identity (default: $CHAT_IDENTITY). When set, an Unread column is shown. | — |
+| Flag       | Description                                                                   | Default |
+| ---------- | ----------------------------------------------------------------------------- | ------- |
+| `--json`   | Output as JSON array                                                          | —       |
+| `--all`    | Include empty channels (hidden by default)                                    | —       |
+| `--unread` | Only list channels with unread messages (requires identity)                   | —       |
+| `--as`     | Your identity (default: $CHAT_IDENTITY). When set, an Unread column is shown. | —       |
 
 
 ### chat merge
@@ -130,10 +130,10 @@ Merge two chat channels by interleaving messages by timestamp
 chat merge [--dry-run] [--no-tag] <source> <target>
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--dry-run` | Show what would happen without writing | — |
-| `--no-tag` | Don't annotate messages with source channel | — |
+| Flag        | Description                                 | Default |
+| ----------- | ------------------------------------------- | ------- |
+| `--dry-run` | Show what would happen without writing      | —       |
+| `--no-tag`  | Don't annotate messages with source channel | —       |
 
 
 ### chat read
@@ -144,17 +144,17 @@ Read messages
 chat read [--as <as>] [--peek] [--all] [--last <last>] [--from <from>] [--after <after>] [--before <before>] [--json] [--id] [chat]
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--as` | Your identity (default: $CHAT_IDENTITY) | — |
-| `--peek` | Don't advance cursor (just look) | — |
-| `--all` | Show all messages, not just unread | — |
-| `--last` | Show only the last N messages (of unread, or of all with --all) | — |
-| `--from` | Filter messages by sender | — |
-| `--after` | Show messages after this date (YYYY-MM-DD) | — |
-| `--before` | Show messages before this date (YYYY-MM-DD) | — |
-| `--json` | Output as JSON array | — |
-| `--id` | Include message IDs in JSON output | — |
+| Flag       | Description                                                     | Default |
+| ---------- | --------------------------------------------------------------- | ------- |
+| `--as`     | Your identity (default: $CHAT_IDENTITY)                         | —       |
+| `--peek`   | Don't advance cursor (just look)                                | —       |
+| `--all`    | Show all messages, not just unread                              | —       |
+| `--last`   | Show only the last N messages (of unread, or of all with --all) | —       |
+| `--from`   | Filter messages by sender                                       | —       |
+| `--after`  | Show messages after this date (YYYY-MM-DD)                      | —       |
+| `--before` | Show messages before this date (YYYY-MM-DD)                     | —       |
+| `--json`   | Output as JSON array                                            | —       |
+| `--id`     | Include message IDs in JSON output                              | —       |
 
 
 ### chat remove
@@ -165,9 +165,9 @@ Permanently remove a chat channel
 chat remove [--yes] [chat]
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--yes` | Skip confirmation | — |
+| Flag    | Description       | Default |
+| ------- | ----------------- | ------- |
+| `--yes` | Skip confirmation | —       |
 
 
 ### chat send
@@ -178,11 +178,11 @@ Send a message to a chat
 chat send [--as <as>] [--chat <chat>] [-f, --force] <message>
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--as` | Your identity (default: $CHAT_IDENTITY) | — |
-| `--chat` | Chat name (default: $CHAT_CHANNEL or default) | — |
-| `-f, --force` | Send even if there are unread messages | — |
+| Flag          | Description                                   | Default |
+| ------------- | --------------------------------------------- | ------- |
+| `--as`        | Your identity (default: $CHAT_IDENTITY)       | —       |
+| `--chat`      | Chat name (default: $CHAT_CHANNEL or default) | —       |
+| `-f, --force` | Send even if there are unread messages        | —       |
 
 
 ### chat status
@@ -193,10 +193,10 @@ Chat status overview
 chat status [--as <as>] [--json] [chat]
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--as` | Your identity — shows unread count (default: $CHAT_IDENTITY) | — |
-| `--json` | Output as JSON object | — |
+| Flag     | Description                                                  | Default |
+| -------- | ------------------------------------------------------------ | ------- |
+| `--as`   | Your identity — shows unread count (default: $CHAT_IDENTITY) | —       |
+| `--json` | Output as JSON object                                        | —       |
 
 
 ### chat test
@@ -216,10 +216,10 @@ Count total unread messages across all channels
 chat unread [--as <as>] [--json]
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--as` | Your identity (default: $CHAT_IDENTITY) | — |
-| `--json` | Output as JSON with per-channel breakdown | — |
+| Flag     | Description                               | Default |
+| -------- | ----------------------------------------- | ------- |
+| `--as`   | Your identity (default: $CHAT_IDENTITY)   | —       |
+| `--json` | Output as JSON with per-channel breakdown | —       |
 
 
 ### chat wait
@@ -230,12 +230,12 @@ Wait for a new message
 chat wait [--as <as>] [--timeout <seconds>] [--forever] [--batch <batch>] [chat]
 ```
 
-| Flag | Description | Default |
-| --- | --- | --- |
-| `--as` | Your identity — ignores own messages (default: $CHAT_IDENTITY) | — |
-| `--timeout` | Max seconds to wait (0 = forever) | `120` |
-| `--forever` | Wait indefinitely (shorthand for --timeout 0) | — |
-| `--batch` | Wait for N messages from others before waking (default: 1) | `1` |
+| Flag        | Description                                                    | Default |
+| ----------- | -------------------------------------------------------------- | ------- |
+| `--as`      | Your identity — ignores own messages (default: $CHAT_IDENTITY) | —       |
+| `--timeout` | Max seconds to wait (0 = forever)                              | `120`   |
+| `--forever` | Wait indefinitely (shorthand for --timeout 0)                  | —       |
+| `--batch`   | Wait for N messages from others before waking (default: 1)     | `1`     |
 
 <br />
 
