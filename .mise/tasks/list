@@ -47,9 +47,8 @@ if ! compgen -G "$CHAT_DATA_DIR/*.md" >/dev/null 2>&1; then
   exit 0
 fi
 
-# Detect current chat for marker
-current=$(_chat_detect_repo)
-current="${current:-global}"
+# Mark the channel that an implicit command would target.
+current="${CHAT_CHANNEL:-default}"
 
 show_all="${usage_all:-false}"
 

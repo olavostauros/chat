@@ -1,6 +1,10 @@
 [settings]
+experimental = true
 quiet = true
 task_output = "interleave"
+
+[plugins]
+shiv = "https://github.com/KnickKnackLabs/vfox-shiv"
 
 [tools]
 jq = "latest"
@@ -8,6 +12,7 @@ gum = "latest"
 uv = "latest"
 bats = "1.13.0"
 "shiv:codebase" = "0.2.0"                  # Codebase linting + migrations
+"shiv:readme" = "0.1.1"
 
 [_.codebase]
 lint = ["mise-settings", "gum-table", "bats-test-helper", "bats-test-task", "mcr-scope", "or-true", "shellcheck"]

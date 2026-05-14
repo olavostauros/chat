@@ -17,6 +17,7 @@ setup() {
   # Clear env vars that could leak between tests
   unset CHAT_IDENTITY
   unset CHAT_CHANNEL
+  unset CHAT_CALLER_PWD
 
   source "$CHAT_REPO_ROOT/lib/chat.sh"
   chat_resolve "test-chat"
