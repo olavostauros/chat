@@ -23,7 +23,7 @@ interface Command {
   name: string;
   description: string;
   flags: { name: string; shortFlag?: string; valueName?: string; help: string; required?: boolean; default?: string; isBoolean: boolean }[];
-  args: { name: string; help: string }[];
+  args: { name: string; help: string; optional: boolean }[];
   hidden: boolean;
 }
 
@@ -52,9 +52,9 @@ function parseTask(filename: string): Command {
       flags.push({ name: `--${name}`, shortFlag, valueName, help, required: required || undefined, default: defMatch?.[1], isBoolean: !valueName });
     }
 
-    const argMatch = line.match(/#USAGE arg "<(\w+)>" help="([^"]+)"/);
+    const argMatch = line.match(/#USAGE arg "([<\[])(\w+)([>\]])" help="([^"]+)"/);
     if (argMatch) {
-      args.push({ name: argMatch[1], help: argMatch[2] });
+      args.push({ name: argMatch[2], help: argMatch[4], optional: argMatch[1] === "[" });
     }
   }
 
@@ -62,7 +62,9 @@ function parseTask(filename: string): Command {
 }
 
 // Parse all tasks
-const taskFiles = readdirSync(TASK_DIR).filter(f => !f.startsWith(".") && !f.startsWith("_"));
+const taskFiles = readdirSync(TASK_DIR, { withFileTypes: true })
+  .filter(entry => entry.isFile() && !entry.name.startsWith(".") && !entry.name.startsWith("_"))
+  .map(entry => entry.name);
 const commands = taskFiles
   .map(parseTask)
   .filter(c => !c.hidden)
@@ -124,7 +126,7 @@ function cmdUsage(cmd: Command): string {
     parts.push(f.required ? `${flagName}${val}` : `[${flagName}${val}]`);
   }
   for (const a of cmd.args) {
-    parts.push(`<${a.name}>`);
+    parts.push(a.optional ? `[${a.name}]` : `<${a.name}>`);
   }
   return parts.join(" ");
 }
@@ -268,18 +270,21 @@ chat status`}</CodeBlock>
       <Paragraph>
         {"When you don't pass "}
         <Code>--chat</Code>
-        {", the tool figures out which channel to use:"}
+        {", the tool uses a small, predictable resolution chain:"}
       </Paragraph>
 
       <List ordered>
         <Item><Bold>Explicit</Bold>{" — "}<Code>--chat myproject</Code>{" selects a specific channel"}</Item>
         <Item><Bold>Environment</Bold>{" — "}<Code>$CHAT_CHANNEL</Code>{" env var (useful in CI or agent homes)"}</Item>
-        <Item><Bold>Git remote</Bold>{" — auto-detects from the current repo's origin (e.g. "}<Code>ricon-family/den</Code>{" → "}<Code>den</Code>{")"}</Item>
-        <Item><Bold>Global fallback</Bold>{" — defaults to "}<Code>global</Code>{" if nothing else matches"}</Item>
+        <Item><Bold>Default</Bold>{" — otherwise commands use the literal "}<Code>default</Code>{" channel"}</Item>
       </List>
 
       <Paragraph>
-        {"Agents working in the same repo automatically share a channel — no configuration needed."}
+        {"Git repository names are not used for implicit channel selection. Use "}
+        <Code>--chat fold</Code>
+        {" or set "}
+        <Code>CHAT_CHANNEL=fold</Code>
+        {" when you want a repo-specific channel."}
       </Paragraph>
     </Section>
 

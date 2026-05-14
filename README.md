@@ -18,7 +18,7 @@ Agents on the same machine exchange short messages through a shared channel.
 No server. No daemon. Just files, cursors, and bash.
 
 ![lang: bash](https://img.shields.io/badge/lang-bash-4EAA25?style=flat&logo=gnubash&logoColor=white)
-[![tests: 89 passing](https://img.shields.io/badge/tests-89%20passing-brightgreen?style=flat)](test/)
+[![tests: 149 passing](https://img.shields.io/badge/tests-149%20passing-brightgreen?style=flat)](test/)
 ![deps: jq + gum](https://img.shields.io/badge/deps-jq%20%2B%20gum-blue?style=flat)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat)
 
@@ -90,7 +90,7 @@ FYI — just pushed the load testing scenarios to the note.
 
 ## Commands
 
-**7 commands**, each a standalone bash script in `.mise/tasks/`:
+**10 commands**, each a standalone bash script in `.mise/tasks/`:
 
 
 ### chat clear
@@ -98,12 +98,11 @@ FYI — just pushed the load testing scenarios to the note.
 Archive old messages and reset a chat
 
 ```
-chat clear [--chat <chat>] [--yes]
+chat clear [--yes] [chat]
 ```
 
 | Flag | Description | Default |
 | --- | --- | --- |
-| `--chat` | Chat name (default: auto-detect from git remote) | — |
 | `--yes` | Skip confirmation | — |
 
 
@@ -112,8 +111,15 @@ chat clear [--chat <chat>] [--yes]
 List available chats
 
 ```
-chat list
+chat list [--json] [--all] [--unread] [--as <as>]
 ```
+
+| Flag | Description | Default |
+| --- | --- | --- |
+| `--json` | Output as JSON array | — |
+| `--all` | Include empty channels (hidden by default) | — |
+| `--unread` | Only list channels with unread messages (requires identity) | — |
+| `--as` | Your identity (default: $CHAT_IDENTITY). When set, an Unread column is shown. | — |
 
 
 ### chat merge
@@ -135,13 +141,12 @@ chat merge [--dry-run] [--no-tag] <source> <target>
 Read messages
 
 ```
-chat read [--as <as>] [--chat <chat>] [--peek] [--all] [--last <last>] [--from <from>] [--after <after>] [--before <before>] [--json] [--id]
+chat read [--as <as>] [--peek] [--all] [--last <last>] [--from <from>] [--after <after>] [--before <before>] [--json] [--id] [chat]
 ```
 
 | Flag | Description | Default |
 | --- | --- | --- |
 | `--as` | Your identity (default: $CHAT_IDENTITY) | — |
-| `--chat` | Chat name (default: $CHAT_CHANNEL or auto-detect) | — |
 | `--peek` | Don't advance cursor (just look) | — |
 | `--all` | Show all messages, not just unread | — |
 | `--last` | Show only the last N messages (of unread, or of all with --all) | — |
@@ -150,6 +155,19 @@ chat read [--as <as>] [--chat <chat>] [--peek] [--all] [--last <last>] [--from <
 | `--before` | Show messages before this date (YYYY-MM-DD) | — |
 | `--json` | Output as JSON array | — |
 | `--id` | Include message IDs in JSON output | — |
+
+
+### chat remove
+
+Permanently remove a chat channel
+
+```
+chat remove [--yes] [chat]
+```
+
+| Flag | Description | Default |
+| --- | --- | --- |
+| `--yes` | Skip confirmation | — |
 
 
 ### chat send
@@ -163,7 +181,7 @@ chat send [--as <as>] [--chat <chat>] [-f, --force] <message>
 | Flag | Description | Default |
 | --- | --- | --- |
 | `--as` | Your identity (default: $CHAT_IDENTITY) | — |
-| `--chat` | Chat name (default: $CHAT_CHANNEL or auto-detect) | — |
+| `--chat` | Chat name (default: $CHAT_CHANNEL or default) | — |
 | `-f, --force` | Send even if there are unread messages | — |
 
 
@@ -172,13 +190,36 @@ chat send [--as <as>] [--chat <chat>] [-f, --force] <message>
 Chat status overview
 
 ```
-chat status [--as <as>] [--chat <chat>]
+chat status [--as <as>] [--json] [chat]
 ```
 
 | Flag | Description | Default |
 | --- | --- | --- |
 | `--as` | Your identity — shows unread count (default: $CHAT_IDENTITY) | — |
-| `--chat` | Chat name (default: $CHAT_CHANNEL or auto-detect) | — |
+| `--json` | Output as JSON object | — |
+
+
+### chat test
+
+Run BATS test suite
+
+```
+chat test
+```
+
+
+### chat unread
+
+Count total unread messages across all channels
+
+```
+chat unread [--as <as>] [--json]
+```
+
+| Flag | Description | Default |
+| --- | --- | --- |
+| `--as` | Your identity (default: $CHAT_IDENTITY) | — |
+| `--json` | Output as JSON with per-channel breakdown | — |
 
 
 ### chat wait
@@ -186,14 +227,15 @@ chat status [--as <as>] [--chat <chat>]
 Wait for a new message
 
 ```
-chat wait [--as <as>] [--chat <chat>] [--timeout <seconds>]
+chat wait [--as <as>] [--timeout <seconds>] [--forever] [--batch <batch>] [chat]
 ```
 
 | Flag | Description | Default |
 | --- | --- | --- |
 | `--as` | Your identity — ignores own messages (default: $CHAT_IDENTITY) | — |
-| `--chat` | Chat name (default: $CHAT_CHANNEL or auto-detect) | — |
 | `--timeout` | Max seconds to wait (0 = forever) | `120` |
+| `--forever` | Wait indefinitely (shorthand for --timeout 0) | — |
+| `--batch` | Wait for N messages from others before waking (default: 1) | `1` |
 
 <br />
 
@@ -209,14 +251,13 @@ Commands that need to know who you are use a single resolution chain:
 
 ## Channel resolution
 
-When you don't pass `--chat`, the tool figures out which channel to use:
+When you don't pass `--chat`, the tool uses a small, predictable resolution chain:
 
 1. **Explicit** — `--chat myproject` selects a specific channel
 2. **Environment** — `$CHAT_CHANNEL` env var (useful in CI or agent homes)
-3. **Git remote** — auto-detects from the current repo's origin (e.g. `ricon-family/den` → `den`)
-4. **Global fallback** — defaults to `global` if nothing else matches
+3. **Default** — otherwise commands use the literal `default` channel
 
-Agents working in the same repo automatically share a channel — no configuration needed.
+Git repository names are not used for implicit channel selection. Use `--chat fold` or set `CHAT_CHANNEL=fold` when you want a repo-specific channel.
 
 ## Design
 
@@ -280,7 +321,7 @@ cd chat && mise trust && mise install
 mise run test
 ```
 
-89 tests across 3 suites, using [BATS](https://github.com/bats-core/bats-core).
+149 tests across 3 suites, using [BATS](https://github.com/bats-core/bats-core).
 
 <br />
 

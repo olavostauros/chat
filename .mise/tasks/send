@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #MISE description="Send a message to a chat"
 #USAGE flag "--as <as>" help="Your identity (default: $CHAT_IDENTITY)"
-#USAGE flag "--chat <chat>" help="Chat name (default: $CHAT_CHANNEL or auto-detect)"
+#USAGE flag "--chat <chat>" help="Chat name (default: $CHAT_CHANNEL or default)"
 #USAGE flag "-f --force" help="Send even if there are unread messages"
 #USAGE arg "<message>" help="The message to send (or - for stdin)"
 set -eo pipefail

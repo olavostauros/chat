@@ -77,6 +77,18 @@ load test_helper
   [[ "$output" == *"env-identity test"* ]]
 }
 
+@test "task read: no chat argument ignores package caller-pwd context" {
+  _setup_git_remote "https://github.com/KnickKnackLabs/chat.git"
+  chat_resolve "default"
+  chat_init
+  chat_append "bob" "default-channel message"
+
+  export CHAT_CALLER_PWD="$BATS_TEST_TMPDIR/fakerepo"
+  run chat read --as alice --all
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"default-channel message"* ]]
+}
+
 @test "task read: --from filters by sender" {
   mark_read "alice"
   send_message "bob" "from bob"
@@ -766,14 +778,21 @@ assert 'unread' not in data, f'unread should not be present without --as, got: {
   [[ "$output" == *"does not exist"* ]]
 }
 
-@test "task remove: refuses to remove global channel" {
-  # Create the global channel
+@test "task remove: refuses to remove default channel" {
+  chat_resolve "default"
+  chat_init
+  run chat remove default --yes
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"cannot remove the default channel"* ]]
+  [ -f "$CHAT_DATA_DIR/default.md" ]
+}
+
+@test "task remove: refuses to remove legacy global channel" {
   chat_resolve "global"
   chat_init
   run chat remove global --yes
   [ "$status" -ne 0 ]
   [[ "$output" == *"cannot remove the global channel"* ]]
-  # File should still exist
   [ -f "$CHAT_DATA_DIR/global.md" ]
 }
 

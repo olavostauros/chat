@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #MISE description="Permanently remove a chat channel"
-#USAGE arg "[chat]" help="Chat name (default: auto-detect from git remote)"
+#USAGE arg "[chat]" help="Chat name (default: $CHAT_CHANNEL or default)"
 #USAGE flag "--yes" help="Skip confirmation"
 set -eo pipefail
 
@@ -8,8 +8,8 @@ source "$MISE_CONFIG_ROOT/lib/chat.sh"
 chat_resolve "${usage_chat:-}"
 chat_require_file
 
-if [ "$CHAT_NAME" = "global" ]; then
-  echo "Error: cannot remove the global channel." >&2
+if [ "$CHAT_NAME" = "default" ] || [ "$CHAT_NAME" = "global" ]; then
+  echo "Error: cannot remove the ${CHAT_NAME} channel." >&2
   exit 1
 fi
 

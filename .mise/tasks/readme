@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#MISE description="Regenerate README.md from README.tsx"
+#MISE hide=true
+set -euo pipefail
+
+cd "$MISE_CONFIG_ROOT"
+readme build

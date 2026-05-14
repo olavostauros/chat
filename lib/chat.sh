@@ -25,24 +25,8 @@ chat_require_identity() {
   fi
 }
 
-# Detect chat name from git remote origin of the caller's directory
-# Returns the repo name (last path component, no org prefix) or empty
-# string when the caller isn't inside a git repo. Always exits 0.
-_chat_detect_repo() {
-  local dir="${CALLER_PWD:-$PWD}"
-  local url
-  if ! url=$(git -C "$dir" remote get-url origin 2>/dev/null); then
-    return 0
-  fi
-  # Strip protocol, host, .git suffix → org/repo, then take last component
-  local path
-  path=$(echo "$url" | sed -E 's#^(https?://[^/]+/|git@[^:]+:)##; s/\.git$//')
-  [ -n "$path" ] && basename "$path"
-  return 0
-}
-
-# Resolve which chat we're targeting
-# Priority: explicit name > $CHAT_CHANNEL env var > git repo > "global"
+# Resolve which chat we're targeting.
+# Priority: explicit name > $CHAT_CHANNEL env var > "default"
 # Usage: chat_resolve [name]
 # Sets CHAT_NAME, CHAT_FILE, CHAT_CURSOR_DIR
 chat_resolve() {
@@ -51,8 +35,7 @@ chat_resolve() {
   elif [ -n "${CHAT_CHANNEL:-}" ]; then
     CHAT_NAME="$CHAT_CHANNEL"
   else
-    CHAT_NAME=$(_chat_detect_repo)
-    CHAT_NAME="${CHAT_NAME:-global}"
+    CHAT_NAME="default"
   fi
   CHAT_FILE="$CHAT_DATA_DIR/${CHAT_NAME}.md"
   CHAT_CURSOR_DIR="$CHAT_DATA_DIR/.cursors/${CHAT_NAME}"
