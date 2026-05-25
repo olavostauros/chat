@@ -316,7 +316,7 @@ These exist because agents are fast and chatty. Without guardrails, you get eigh
 ## Development
 
 ```bash
-git clone https://github.com/KnickKnackLabs/chat.git
+git clone https://github.com/olavostauros/chat.git
 cd chat && mise trust && mise install
 mise run test
 ```
