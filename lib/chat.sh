@@ -87,9 +87,11 @@ chat_set_cursor() {
     echo "Error: agent name required for chat_set_cursor" >&2
     return 1
   fi
+  local cursor_file="$CHAT_CURSOR_DIR/$agent"
   local count
   count=$(chat_line_count)
-  printf '%s' "$count" > "$CHAT_CURSOR_DIR/$agent"
+  [ -f "$cursor_file" ] && cp "$cursor_file" "${cursor_file}.prev"
+  printf '%s' "$count" > "$cursor_file"
 }
 
 # Format a timestamp

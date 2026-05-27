@@ -162,6 +162,25 @@ load test_helper
   [ "$status" -ne 0 ]
 }
 
+@test "cursor: set saves .prev when cursor already exists" {
+  send_message "bob" "first"
+  chat_set_cursor "alice"
+  local first_pos
+  first_pos=$(chat_get_cursor "alice")
+
+  send_message "bob" "second"
+  chat_set_cursor "alice"
+
+  local prev_file="$CHAT_CURSOR_DIR/alice.prev"
+  [ -f "$prev_file" ]
+  [ "$(cat "$prev_file")" = "$first_pos" ]
+}
+
+@test "cursor: set does not create .prev on first advance" {
+  chat_set_cursor "alice"
+  [ ! -f "$CHAT_CURSOR_DIR/alice.prev" ]
+}
+
 # ============================================================================
 # chat_append
 # ============================================================================

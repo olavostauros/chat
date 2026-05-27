@@ -18,5 +18,5 @@ if [ ! -f "$cursor_file" ]; then
   exit 0
 fi
 
-rm -f "$cursor_file"
+rm -f "$cursor_file" "${cursor_file}.prev"
 echo "Cursor cleared for $CHAT_IDENTITY on $CHAT_NAME."
