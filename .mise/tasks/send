@@ -39,6 +39,15 @@ if [ "$line_count" -gt "$MAX_LINES" ]; then
   exit 1
 fi
 
+# Append signature if set (after line-count check so limit applies to message only)
+sig_file="$CHAT_DATA_DIR/.signatures/$from"
+if [ -f "$sig_file" ]; then
+  message="${message}
+
+--
+$(cat "$sig_file")"
+fi
+
 # Guard: warn if sender has unread messages (skip for first-time senders)
 if [ "${usage_force:-false}" != "true" ]; then
   cursor=$(chat_get_cursor "$from")
