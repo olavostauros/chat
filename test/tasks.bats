@@ -89,11 +89,11 @@ load test_helper
   [[ "$output" == *"default-channel message"* ]]
 }
 
-@test "task read: --from filters by sender" {
+@test "task read: --by filters by sender" {
   mark_read "alice"
   send_message "bob" "from bob"
   send_message "carol" "from carol"
-  run chat read test-chat --as alice --from bob
+  run chat read test-chat --as alice --by bob
   [ "$status" -eq 0 ]
   [[ "$output" == *"from bob"* ]]
   [[ "$output" != *"from carol"* ]]
@@ -122,12 +122,12 @@ load test_helper
   [[ "$output" == *"new"* ]]
 }
 
-@test "task read: --from implies --all (shows past cursor)" {
+@test "task read: --by implies --all (shows past cursor)" {
   send_message "alice" "before cursor"
   mark_read "bob"
   send_message "alice" "after cursor"
-  # bob's cursor is past "before cursor", but --from alice should show both
-  run chat read test-chat --as bob --from alice
+  # bob's cursor is past "before cursor", but --by alice should show both
+  run chat read test-chat --as bob --by alice
   [ "$status" -eq 0 ]
   [[ "$output" == *"before cursor"* ]]
   [[ "$output" == *"after cursor"* ]]
